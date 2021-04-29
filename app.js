@@ -3,6 +3,7 @@ const express = require("express");
 const app = express();
 const path = require("path");
 const main = require("./views/main.js");
+const {db, Page, User} = require('./models')
 
 app.use(morgan("dev"));
 
@@ -14,8 +15,24 @@ app.get("/", (req, res, next) => {
   res.send(main());
 });
 
-const PORT = 3000;
+db.authenticate()
+  .then(() => {
+    console.log('connected to the database');
+  })
 
-app.listen(PORT, () => {
-  console.log(`Listening at http://localhost:${PORT}`);
-});
+
+const makeTables = async () => {
+  await db.sync();
+
+
+  const PORT = 3000;
+  app.listen(PORT, () => {
+    console.log(`Server is listening on http://localhost:${PORT}`)
+  })
+}
+
+makeTables();
+//   .then(( => {
+//   return User.create({name, email})
+// }))
+
